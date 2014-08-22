@@ -12,25 +12,26 @@
 using std::cout;
 using std::endl;
 
-const std::vector<uint64_t>& 
-Snapshot::link(uint32_t i) {
-    LinkMap::iterator it = links_.find(i);
-    if ( it == links_.end() )
-        throw std::runtime_error("Link id not found");
-    
-    return  it->second;
-}
+
+// Constants initialization
 boost::regex Reader::reBoard_("^Board (.+)");
 boost::regex Reader::reLink_("^Link : (.*)");
 boost::regex Reader::reQuadChan_("^Quad/Chan : (.*)");
 boost::regex Reader::reFrame_("^Frame (\\d{4}) : (.*)");
 boost::regex Reader::reValid_("([01])v([0-9a-fA-F]{8})");
 
-Reader::Reader(const std::string& path) : valid_(false), path_(path), file_(path)
-//        reBoard_("^Board (.+)"), reLink_("^Link : (.*)"),
-//        reQuadChan_("^Quad/Chan : (.*)"), reFrame_("^Frame (\\d{4}) : (.*)"),
-//        reValid_("[01]v\\x{8}") 
-{
+//____________________________________________________________________________//
+const std::vector<uint64_t>& 
+BufferData::link(uint32_t i) const {
+    LinkMap::const_iterator it = links_.find(i);
+    if ( it == links_.end() )
+        throw std::runtime_error("Link id not found");
+    
+    return  it->second;
+}
+
+//____________________________________________________________________________//
+Reader::Reader(const std::string& path) : valid_(false), path_(path), file_(path) {
     if (!file_.is_open()) {
         cout << "File " << path << " not found" << endl;
         valid_ = false;
@@ -40,22 +41,17 @@ Reader::Reader(const std::string& path) : valid_(false), path_(path), file_(path
     load();
 }
 
+//____________________________________________________________________________//
 Reader::~Reader() {
 }
 
-// search for Board
-// then search for Link
-// then search for Frames
 
-// Rules:
-// No links or frames before Board
-// Only Links after Board
-// Only frames after Link until board
-
-// search board
-// search links
-// read rows
-
+//____________________________________________________________________________//
+const BufferData&
+Reader::get(size_t k) const {
+    return buffers_.at(k);
+}
+//____________________________________________________________________________//
 void
 Reader::load() {
     using namespace boost;
@@ -79,7 +75,7 @@ Reader::load() {
 
         // Id, Link # and Data Loaded
 
-        Snapshot s;
+        BufferData s;
         s.name_ = id;
 
         std::vector< std::vector<uint64_t> > chans( links.size(), std::vector<uint64_t>(data.size()) );
@@ -96,11 +92,12 @@ Reader::load() {
             s.links_.insert( std::make_pair(links[i],chans[i]) );
         }
         
-        snaps_.insert(std::make_pair(s.name(),s));
+        buffers_.push_back(s);
     }
 
 }
 
+//____________________________________________________________________________//
 std::string
 Reader::searchBoard() {
     std::string line;
@@ -126,6 +123,7 @@ Reader::searchBoard() {
     throw std::logic_error("No board found");
 }
 
+//____________________________________________________________________________//
 std::vector<uint32_t>
 Reader::searchLinks() {
     std::string line;
@@ -168,11 +166,12 @@ uint64_t Reader::validStrToUint64(const std::string& token) {
         throw std::logic_error("Token '" + token + "' doesn't match the valid format");
     }
 
-    uint64_t value = (uint64_t) (what[1] == "0") << 32;
+    uint64_t value = (uint64_t) (what[1] == "1") << 32;
     value += std::stoul(what[2].str(), 0x0, 16);
     return value;
 }
 
+//____________________________________________________________________________//
 std::vector< std::vector<uint64_t> >
 Reader::readRows() {
     std::string line;
@@ -209,37 +208,6 @@ Reader::readRows() {
 
         place = file_.tellg();
     }
-
-    return data;
-
-}
-
-std::vector<std::string>
-Reader::readrow(int nLinks) {
-
-    // input buffers
-    std::string line;
-    std::getline(file_, line);
-    if (!file_.good()) {
-        cout << "End of input file! " << path_ << std::endl;
-        return std::vector<std::string>(0);
-    }
-
-    // split line into tokens
-    std::vector<std::string> data;
-    boost::split(data, line, boost::is_any_of("\t "), boost::token_compress_on);
-
-    // check we have read the right number of link words
-    if ((int) data.size() - 3 != nLinks) {
-        cout << "Read " << data.size() << " links, expected " << nLinks << " " << data.at(0) << " " << data.at(data.size() - 1) << std::endl;
-        return std::vector<std::string>(0);
-    }
-
-    // remove "Frame" and ":"
-    std::vector<std::string>::iterator itr = data.begin();
-    data.erase(itr);
-    itr++;
-    data.erase(itr);
 
     return data;
 
