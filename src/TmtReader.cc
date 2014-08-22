@@ -1,6 +1,7 @@
 #include "TmtReader.h"
 
 #include <boost/foreach.hpp>
+#include <iostream>
 
 using std::cout;
 using std::endl;
@@ -59,18 +60,14 @@ TmtReader::load() {
                         lIt->second.begin() + p.second - footer_
                         );
             }
-            pkt.first_ = p.first;
-            pkt.last_ = p.second;
+            pkt.first_ = p.first + header_;
+            pkt.last_ = p.second - footer_;
                     
             data.packets_.push_back(pkt);
         }
         
         buffers_.push_back(data);   
-        
-        BOOST_FOREACH( Packet p, data.packets_) {
-            cout << "Found packet [" << p.first_ << "," << p.last_ << "] " << p.size() << endl;
-        }
-        
+               
         
     }
 }

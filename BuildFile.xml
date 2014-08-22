@@ -1,0 +1,6 @@
+<flags cxxflags="-g -ggdb -I${CMSSW_BASE}/src/L1T/mp7reader/include"/>
+<use name="boost" />
+<lib name="boost_regex"/>
+<export>
+    <lib name="1"/>
+</export>

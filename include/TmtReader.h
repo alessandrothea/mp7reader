@@ -24,11 +24,17 @@ public:
 
 class TmtData {
 public:
-    
-    size_t size() const { return packets_.size(); }
 
     const std::string& name() const { return name_;}
+    
+    typedef std::vector<Packet>::const_iterator const_iterator;
 
+    const_iterator begin() const { return packets_.begin(); }
+
+    const_iterator end() const { return packets_.end(); }
+    
+    size_t size() const { return packets_.size(); }
+    
 private:
 
     std::string name_;
@@ -39,10 +45,21 @@ private:
 
 class TmtReader {
 public:
-    
+    typedef std::vector<TmtData>::const_iterator const_iterator;
+        
     TmtReader( const std::string& path, uint32_t striphdr = 0, uint32_t stripftr = 0);
+
     virtual ~TmtReader();
+
     bool valid() const { return reader_.valid(); }
+    
+    const TmtData& get( size_t i ) { return buffers_.at(i); }
+
+    const_iterator begin() const { return buffers_.begin(); }
+
+    const_iterator end() const { return buffers_.end(); }
+    
+    size_t size() const { return buffers_.size(); }
     
 private:
     

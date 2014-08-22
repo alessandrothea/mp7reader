@@ -51,6 +51,7 @@ public:
     virtual ~RawReader();
     
     bool valid() const { return valid_; }
+    
     const std::string& path() const { return path_; }
     
     const RawData& get( size_t k ) const;
@@ -58,6 +59,7 @@ public:
     std::vector<std::string> names() const;
     
     const_iterator begin() { return buffers_.begin(); }
+    
     const_iterator end() { return buffers_.end(); }
     
     size_t size() const { return buffers_.size(); }

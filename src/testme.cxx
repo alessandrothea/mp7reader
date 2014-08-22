@@ -3,8 +3,6 @@
 #include <iostream>
 #include <iomanip>
 
-#include <boost/foreach.hpp>
-#include <boost/typeof/typeof.hpp>
 using std::cout;
 using std::endl;
 using std::hex;
@@ -24,7 +22,12 @@ int main( int argc, char** argv ) {
     std::string path = argv[1];
     
     try {
-        TmtReader r(path);
+        TmtReader r(path,1);
+        const TmtData& data = r.get(0);
+        TmtData::const_iterator it;
+        for( it = data.begin();  it != data.end(); ++it ) {
+            cout << "Found packet ->[" << it->first_ << "," << it->last_ << "] " << it->size() << endl;
+        }
         
     } catch ( std::logic_error e ) {
         cout << "Exception!" << endl;
