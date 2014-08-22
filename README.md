@@ -1,4 +1,4 @@
 mp7reader
 =========
 
-C++ Tools to import mp7 buffer dumps
+C++ tools to read mp7 buffer captures
