@@ -10,6 +10,8 @@
 
 #include "RawReader.h"
 
+typedef std::pair<uint32_t, uint32_t> PacketRange;
+
 class Packet {
 public:
     typedef std::map< uint32_t, std::vector<uint32_t> > LinkMap;
@@ -37,6 +39,7 @@ private:
 
 class TmtReader {
 public:
+    
     TmtReader( const std::string& path, uint32_t striphdr = 0, uint32_t stripftr = 0);
     virtual ~TmtReader();
     bool valid() const { return reader_.valid(); }
@@ -44,15 +47,13 @@ public:
 private:
     
     void load();
+    static std::vector<PacketRange> findPackets( std::vector<uint64_t> data );
     
     std::vector< TmtData > buffers_;
     RawReader reader_;
     uint32_t header_;
     uint32_t footer_;
 };
-
-typedef std::pair<uint32_t, uint32_t> PacketRange;
-std::vector<PacketRange> findPackets( std::vector<uint64_t> data );
 
 #endif	/* TMTREADER_H */
 

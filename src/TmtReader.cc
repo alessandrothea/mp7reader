@@ -75,7 +75,8 @@ TmtReader::load() {
     }
 }
 
-std::vector<PacketRange> findPackets( std::vector<uint64_t> data ) {
+std::vector<PacketRange>
+TmtReader::findPackets( std::vector<uint64_t> data ) {
     std::vector<PacketRange> ranges;
     bool v = false;
     int32_t begin(-1), end(-1);
