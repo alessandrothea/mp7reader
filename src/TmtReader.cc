@@ -5,7 +5,7 @@
 using std::cout;
 using std::endl;
 
-TmtReader::TmtReader(const std::string& path) : reader_( path ) {    
+TmtReader::TmtReader(const std::string& path, uint32_t striphdr, uint32_t stripftr) : reader_( path ), header_(striphdr), footer_(stripftr) {    
     if ( !reader_.valid() ) return;
     load();
 }
@@ -42,11 +42,22 @@ TmtReader::load() {
         
         // loop over the ranges to build packets
         BOOST_FOREACH(PacketRange p, pr) {
+            
+            // Check if the header/footer zeroed the packet
+            if ( p.second-p.first-header_-footer_<= 0 ) {
+                // Turn this into an error message
+                cout << "Error: packet length is zero (or less) after header/footer stripping. Skipping." << endl;
+                continue;
+            }
+            
             Packet pkt;
             RawData::const_iterator lIt = raw.begin();
             for( ; lIt != raw.end(); ++lIt ) {
                 // Here the 64 bit uint is converted into a 32 bit uint, the data valid bit is stripped in the 64->32 bit conversion.
-                pkt.links_[lIt->first] = std::vector<uint32_t>(lIt->second.begin() + p.first, lIt->second.begin()+p.second);
+                pkt.links_[lIt->first] = std::vector<uint32_t>(
+                        lIt->second.begin() + p.first + header_,
+                        lIt->second.begin() + p.second - footer_
+                        );
             }
             pkt.first_ = p.first;
             pkt.last_ = p.second;

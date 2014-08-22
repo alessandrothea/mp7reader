@@ -37,7 +37,7 @@ private:
 
 class TmtReader {
 public:
-    TmtReader( const std::string& path );
+    TmtReader( const std::string& path, uint32_t striphdr = 0, uint32_t stripftr = 0);
     virtual ~TmtReader();
     bool valid() const { return reader_.valid(); }
     
@@ -47,6 +47,8 @@ private:
     
     std::vector< TmtData > buffers_;
     RawReader reader_;
+    uint32_t header_;
+    uint32_t footer_;
 };
 
 typedef std::pair<uint32_t, uint32_t> PacketRange;
