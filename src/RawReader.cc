@@ -1,4 +1,4 @@
-#include "Reader.h"
+#include "RawReader.h"
 //#include <boost/filesystem.hpp>
 #include <boost/algorithm/string.hpp>
 #include <boost/regex.hpp>
@@ -14,15 +14,15 @@ using std::endl;
 
 
 // Constants initialization
-boost::regex Reader::reBoard_("^Board (.+)");
-boost::regex Reader::reLink_("^Link : (.*)");
-boost::regex Reader::reQuadChan_("^Quad/Chan : (.*)");
-boost::regex Reader::reFrame_("^Frame (\\d{4}) : (.*)");
-boost::regex Reader::reValid_("([01])v([0-9a-fA-F]{8})");
+boost::regex RawReader::reBoard_("^Board (.+)");
+boost::regex RawReader::reLink_("^Link : (.*)");
+boost::regex RawReader::reQuadChan_("^Quad/Chan : (.*)");
+boost::regex RawReader::reFrame_("^Frame (\\d{4}) : (.*)");
+boost::regex RawReader::reValid_("([01])v([0-9a-fA-F]{8})");
 
 //____________________________________________________________________________//
 const std::vector<uint64_t>& 
-BufferData::link(uint32_t i) const {
+RawData::link(uint32_t i) const {
     LinkMap::const_iterator it = links_.find(i);
     if ( it == links_.end() )
         throw std::runtime_error("Link id not found");
@@ -31,7 +31,7 @@ BufferData::link(uint32_t i) const {
 }
 
 //____________________________________________________________________________//
-Reader::Reader(const std::string& path) : valid_(false), path_(path), file_(path) {
+RawReader::RawReader(const std::string& path) : valid_(false), path_(path), file_(path) {
     if (!file_.is_open()) {
         cout << "File " << path << " not found" << endl;
         valid_ = false;
@@ -42,18 +42,28 @@ Reader::Reader(const std::string& path) : valid_(false), path_(path), file_(path
 }
 
 //____________________________________________________________________________//
-Reader::~Reader() {
+RawReader::~RawReader() {
 }
 
 
 //____________________________________________________________________________//
-const BufferData&
-Reader::get(size_t k) const {
+const RawData&
+RawReader::get(size_t k) const {
     return buffers_.at(k);
+}
+
+std::vector<std::string>
+RawReader::names() const {
+    std::vector<std::string> names(buffers_.size());
+    
+    BOOST_FOREACH( const RawData& r, buffers_ ) {
+        names.push_back(r.name());
+    } 
+    return names;
 }
 //____________________________________________________________________________//
 void
-Reader::load() {
+RawReader::load() {
     using namespace boost;
 
 
@@ -75,7 +85,7 @@ Reader::load() {
 
         // Id, Link # and Data Loaded
 
-        BufferData s;
+        RawData s;
         s.name_ = id;
 
         std::vector< std::vector<uint64_t> > chans( links.size(), std::vector<uint64_t>(data.size()) );
@@ -94,12 +104,15 @@ Reader::load() {
         
         buffers_.push_back(s);
     }
+    
+    // File successfully read
+    valid_ = true;
 
 }
 
 //____________________________________________________________________________//
 std::string
-Reader::searchBoard() {
+RawReader::searchBoard() {
     std::string line;
     std::string id;
     boost::smatch what;
@@ -125,7 +138,7 @@ Reader::searchBoard() {
 
 //____________________________________________________________________________//
 std::vector<uint32_t>
-Reader::searchLinks() {
+RawReader::searchLinks() {
     std::string line;
     boost::smatch what;
 
@@ -159,7 +172,7 @@ Reader::searchLinks() {
     throw std::logic_error("No list of links found");
 }
 
-uint64_t Reader::validStrToUint64(const std::string& token) {
+uint64_t RawReader::validStrToUint64(const std::string& token) {
 
     boost::smatch what;
     if (!boost::regex_match(token, what, reValid_)) {
@@ -173,7 +186,7 @@ uint64_t Reader::validStrToUint64(const std::string& token) {
 
 //____________________________________________________________________________//
 std::vector< std::vector<uint64_t> >
-Reader::readRows() {
+RawReader::readRows() {
     std::string line;
     boost::smatch what;
     std::vector< std::vector<uint64_t> > data;

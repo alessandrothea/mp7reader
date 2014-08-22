@@ -19,13 +19,13 @@
 #include <boost/regex.hpp>
 
 
-class BufferData {
+class RawData {
 public:
     typedef std::map< uint32_t, std::vector<uint64_t> > LinkMap;
     typedef  LinkMap::value_type value_type;
     typedef  LinkMap::const_iterator const_iterator;
     
-    const std::string& name() { return name_;}
+    const std::string& name() const { return name_;}
     
     const std::vector<uint64_t>& link ( uint32_t i ) const;
     
@@ -39,18 +39,29 @@ private:
     std::string name_;
     LinkMap links_; 
     
-    friend class Reader;
+    friend class RawReader;
 };
 
-class Reader {
+class RawReader {
 public:
-    Reader( const std::string& path );
-    virtual ~Reader();
+    
+    typedef std::vector<RawData>::const_iterator const_iterator;
+    
+    RawReader( const std::string& path );
+    virtual ~RawReader();
     
     bool valid() const { return valid_; }
     const std::string& path() const { return path_; }
     
-    const BufferData& get( size_t k ) const;
+    const RawData& get( size_t k ) const;
+    
+    std::vector<std::string> names() const;
+    
+    const_iterator begin() { return buffers_.begin(); }
+    const_iterator end() { return buffers_.end(); }
+    
+    size_t size() const { return buffers_.size(); }
+    
 
 private:
     std::string searchBoard();
@@ -69,7 +80,7 @@ private:
 
 public:
     
-    std::vector<BufferData> buffers_;
+    std::vector<RawData> buffers_;
     
 private:
     static boost::regex reBoard_;
