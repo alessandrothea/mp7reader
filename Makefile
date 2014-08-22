@@ -4,8 +4,8 @@ PACKAGE_VER_PATCH = 0
 PACKAGE_RELEASE = 0
 
 LIBRARY = lib/libmp7reader.so
-LIBRARY_SOURCES = $(wildcard src/*.cpp)
-LIBRARY_OBJECT_FILES = $(patsubst src/%.cpp,obj/%.o,${LIBRARY_SOURCES})
+LIBRARY_SOURCES = $(wildcard src/*.cc)
+LIBRARY_OBJECT_FILES = $(patsubst src/%.cc,obj/%.o,${LIBRARY_SOURCES})
 
 EXECUTABLE_SOURCES = $(wildcard src/*.cxx)
 EXECUTABLE_OBJECT_FILES = $(patsubst src/%.cxx,obj/%.o,${EXECUTABLE_SOURCES})
@@ -35,11 +35,11 @@ INCLUDE_PATH = 	\
 		-Iinclude/ \
 		-I${CACTUS_ROOT}/include
 
-CPP_FLAGS = -g -Wall -O3 -MMD -MP -fPIC 
+CPP_FLAGS = -g -Wall -MMD -MP -fPIC -O0 -std=c++0x  
 
-LINK_LIBRARY_FLAGS = -g -shared -fPIC -Wall -O3 ${LIBRARY_PATH} ${LIBRARIES}
+LINK_LIBRARY_FLAGS = -g -shared -fPIC -Wall ${LIBRARY_PATH} ${LIBRARIES}
 
-LINK_EXECUTABLE_FLAGS = -g -Wall -O3 ${LIBRARY_PATH} ${EXECUTABLE_LIBRARIES}
+LINK_EXECUTABLE_FLAGS = -g -Wall ${LIBRARY_PATH} ${EXECUTABLE_LIBRARIES}
 
 
 .PHONY: all _all clean _cleanall build _buildall install _installall rpm _rpmall test _testall spec_update
@@ -61,7 +61,7 @@ _all: ${LIBRARY} ${EXECUTABLES}
 ${LIBRARY}: ${LIBRARY_OBJECT_FILES}
 	g++ ${LINK_LIBRARY_FLAGS} ${LIBRARY_OBJECT_FILES} -o $@
 
-${LIBRARY_OBJECT_FILES}: obj/%.o : src/%.cpp
+${LIBRARY_OBJECT_FILES}: obj/%.o : src/%.cc
 	mkdir -p {lib,obj}
 	g++ ${INCLUDE_PATH} ${CPP_FLAGS} -c $< -o $@
 
