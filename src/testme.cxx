@@ -15,6 +15,9 @@ class Packet {
 public:
     typedef std::map< uint32_t, std::vector<uint32_t> > LinkMap;
     
+    size_t size() const { return last_-first_+1; }
+    uint32_t first_;
+    uint32_t last_;
     LinkMap links_; 
 };
 
@@ -82,17 +85,23 @@ int main( int argc, char** argv ) {
         cout << "number of different patterns: " << rangeSet.size() << endl;
         
         std::vector<PacketRange > pr = *(rangeSet.begin());
-        
+        std::vector<Packet> packets;
+        packets.reserve(pr.size());
         BOOST_FOREACH(PacketRange p, pr) {
             Packet pkt;
             BufferData::const_iterator lIt = data.begin();
             for( ; lIt != data.end(); ++lIt ) {
-                cout << lIt->first << endl;
-                // Here the 64 bit uint is converted into a 32 bit uint, stripping the data valid bit.
-                std::vector<uint32_t> tmp(lIt->second.begin() + p.first, lIt->second.begin()+p.second);
-                
-//                return 0;
+                // Here the 64 bit uint is converted into a 32 bit uint, the data valid bit is stripped in the 64->32 bit conversion.
+                pkt.links_[lIt->first] = std::vector<uint32_t>(lIt->second.begin() + p.first, lIt->second.begin()+p.second);
             }
+            pkt.first_ = p.first;
+            pkt.last_ = p.second;
+                    
+            packets.push_back(pkt);
+        }
+        
+        BOOST_FOREACH( Packet p, packets) {
+            cout << "Found packet [" << p.first_ << "," << p.last_ << "]" << endl;
         }
         
     } catch ( std::logic_error e ) {
