@@ -45,23 +45,31 @@ private:
 class RawReader {
 public:
     
+    /// expose vector's const iterator
     typedef std::vector<RawData>::const_iterator const_iterator;
     
     RawReader( const std::string& path );
     virtual ~RawReader();
     
+    /// reader status. valid() == 1 indicates that data was successfully read from file
     bool valid() const { return valid_; }
     
+    /// source file path
     const std::string& path() const { return path_; }
     
+    /// data getter via index
     const RawData& get( size_t k ) const;
     
+    /// raw data name collector
     std::vector<std::string> names() const;
     
+    /// vector's begin iterator
     const_iterator begin() { return buffers_.begin(); }
     
+    /// vector's end iterator
     const_iterator end() { return buffers_.end(); }
     
+    /// number of rawdata objects stored
     size_t size() const { return buffers_.size(); }
     
 
