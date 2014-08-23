@@ -1,5 +1,6 @@
 <use name="boost" />
-<flags cxxflags="-g -ggdb -I${CMSSW_BASE}/src/L1T/mp7reader/include"/>
+<!--><flags cxxflags="-g -ggdb -I${CMSSW_BASE}/src/L1T/mp7reader/include"/><-->
+<flags cxxflags="-g -ggdb"/>
 <lib name="boost_regex"/>
 <!-->Horrible hack<-->
 <bin file="../src/testme.cxx" name="testme.exe">

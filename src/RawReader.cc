@@ -1,4 +1,4 @@
-#include "RawReader.h"
+#include "../include/RawReader.h"
 //#include <boost/filesystem.hpp>
 #include <boost/algorithm/string.hpp>
 #include <boost/regex.hpp>

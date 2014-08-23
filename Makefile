@@ -32,7 +32,6 @@ EXECUTABLE_LIBRARIES = ${LIBRARIES} -lmp7reader
 $(info ${EXECUTABLE_LIBRARIES})
 
 INCLUDE_PATH = 	\
-		-Iinclude/ \
 		-I${CACTUS_ROOT}/include
 
 CPP_FLAGS = -g -Wall -MMD -MP -fPIC -O0 -std=c++0x  

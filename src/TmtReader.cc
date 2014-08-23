@@ -1,4 +1,4 @@
-#include "TmtReader.h"
+#include "../include/TmtReader.h"
 
 #include <boost/foreach.hpp>
 #include <iostream>
