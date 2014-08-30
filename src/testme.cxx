@@ -1,4 +1,4 @@
-#include "../include/TmtReader.h"
+#include "../include/PacketReader.h"
 
 #include <iostream>
 #include <iomanip>
@@ -22,7 +22,7 @@ int main( int argc, char** argv ) {
     std::string path = argv[1];
     
     try {
-        TmtReader r(path,1);
+        PacketReader r(path,1);
         const TmtData& data = r.get(0);
         TmtData::const_iterator it;
         for( it = data.begin();  it != data.end(); ++it ) {

@@ -40,16 +40,16 @@ private:
     std::string name_;
     std::vector<Packet> packets_;
     
-    friend class TmtReader;
+    friend class PacketReader;
 };
 
-class TmtReader {
+class PacketReader {
 public:
     typedef std::vector<TmtData>::const_iterator const_iterator;
         
-    TmtReader( const std::string& path, uint32_t striphdr = 0, uint32_t stripftr = 0);
+    PacketReader( const std::string& path, uint32_t striphdr = 0, uint32_t stripftr = 0);
 
-    virtual ~TmtReader();
+    virtual ~PacketReader();
 
     bool valid() const { return reader_.valid(); }
     

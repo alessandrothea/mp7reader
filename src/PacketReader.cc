@@ -1,4 +1,4 @@
-#include "../include/TmtReader.h"
+#include "../include/PacketReader.h"
 
 #include <boost/foreach.hpp>
 #include <iostream>
@@ -6,16 +6,16 @@
 using std::cout;
 using std::endl;
 
-TmtReader::TmtReader(const std::string& path, uint32_t striphdr, uint32_t stripftr) : reader_( path ), header_(striphdr), footer_(stripftr) {    
+PacketReader::PacketReader(const std::string& path, uint32_t striphdr, uint32_t stripftr) : reader_( path ), header_(striphdr), footer_(stripftr) {    
     if ( !reader_.valid() ) return;
     load();
 }
 
-TmtReader::~TmtReader() {
+PacketReader::~PacketReader() {
 }
 
 void
-TmtReader::load() {
+PacketReader::load() {
     
     buffers_.reserve(reader_.size());
     RawReader::const_iterator it = reader_.begin();
@@ -73,7 +73,7 @@ TmtReader::load() {
 }
 
 std::vector<PacketRange>
-TmtReader::findPackets( std::vector<uint64_t> data ) {
+PacketReader::findPackets( std::vector<uint64_t> data ) {
     std::vector<PacketRange> ranges;
     bool v = false;
     int32_t begin(-1), end(-1);
