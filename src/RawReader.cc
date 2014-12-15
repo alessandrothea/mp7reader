@@ -181,7 +181,7 @@ uint64_t RawReader::validStrToUint64(const std::string& token) {
 
     uint32_t strobe = (uint64_t)(what[1].matched ? what[1] == "1s" : 1) << 33;
     uint64_t value = (uint64_t) (what[2] == "1v") << 32;
-    value += std::stoul(what[2].str(), 0x0, 16);
+    value += std::stoul(what[3].str(), 0x0, 16);
     return value;
 }
 
