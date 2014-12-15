@@ -18,7 +18,7 @@ boost::regex RawReader::reBoard_("^Board (.+)");
 boost::regex RawReader::reLink_("^Link : (.*)");
 boost::regex RawReader::reQuadChan_("^Quad/Chan : (.*)");
 boost::regex RawReader::reFrame_("^Frame (\\d{4}) : (.*)");
-boost::regex RawReader::reValid_("([01])v([0-9a-fA-F]{8})");
+boost::regex RawReader::reValid_("([01]s)?([01]v)([0-9a-fA-F]{8})");
 
 //____________________________________________________________________________//
 const std::vector<uint64_t>& 
@@ -179,7 +179,8 @@ uint64_t RawReader::validStrToUint64(const std::string& token) {
         throw std::logic_error("Token '" + token + "' doesn't match the valid format");
     }
 
-    uint64_t value = (uint64_t) (what[1] == "1") << 32;
+    uint32_t strobe = (uint64_t)(what[1].matched ? what[1] == "1s" : 1) << 33;
+    uint64_t value = (uint64_t) (what[2] == "1v") << 32;
     value += std::stoul(what[2].str(), 0x0, 16);
     return value;
 }
